@@ -1,2 +1,2 @@
 # Appointments-WebSocket
-:zap: App with WebSocket 
+:zap: App of appointments with WebSocket 
