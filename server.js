@@ -47,7 +47,7 @@ User.init({
 
 // the defined model is the class itself
 console.log(User === sequelize.models.User); // true
-User.sync()
+User.sync();
 
 
 
@@ -58,10 +58,10 @@ const app = express();
 app.set('port', process.env.PORT);
 app.use(express.static(path.join(__dirname, 'public')));
 
-const server = app.listen(process.env.PORT, function () {
-    console.log(`RUNNING ON ${process.env.PORT}. Graphiql http://localhost:${process.env.PORT}/`);
+const server_old = app.listen(process.env.PORT, function () {
+    console.log(`RUNNING ON ${process.env.PORT}. http://localhost:${process.env.PORT}/`);
 });
-const io = webSocket(server);
+const io         = webSocket(server_old);
 
 io.on('connection', (socket) => {
     console.log('new connection', socket.id);
