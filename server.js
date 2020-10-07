@@ -19,7 +19,7 @@ const sequelize = new Sequelize({
 sequelize
     .authenticate()
     .then(() => {
-        console.log('Connection has been established successfully.');
+        console.log('Connection has been established successfully. -a sequelize-');
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);
@@ -27,30 +27,45 @@ sequelize
 
 
 
-class User extends Model {}
+class Citas extends Model {} // aggd //de sequelize
 
-User.init({
+Citas.init({
     // Model attributes are defined here
-    firstName: {
+    mascota: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    lastName: {
-        type: DataTypes.STRING
+    cliente: {
+        type: DataTypes.STRING,
+        allowNull: false
         // allowNull defaults to true
+    },
+    telefono:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    fecha:{
+        type: DataTypes.DATEONLY,
+        allowNull: false
+    },
+    hora:{
+        type: DataTypes.STRING,
+        allowNull:false
+    },
+    sintomas:{
+        type: DataTypes.STRING,
+        allowNull: false
     }
+
 }, {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'User' // We need to choose the model name
+    modelName: 'Citas' // We need to choose the model name
 });
 
 // the defined model is the class itself
-console.log(User === sequelize.models.User); // true
-User.sync();
-
-
-
+console.log(Citas === sequelize.models.Citas); // true
+Citas.sync();
 
 dotenv.config();
 const app = express();
@@ -66,9 +81,22 @@ const io         = webSocket(server_old);
 io.on('connection', (socket) => {
     console.log('new connection', socket.id);
 
-    socket.on('info:DB', (data) => {
+    socket.on('info:DB', async (data) => {
         //Justo en este momento debes hacer algo en la base de datos real
+        const citas = await Citas.create({
+            mascota: data.mascota,
+            cliente: data.cliente,
+            telefono: data.telefono,
+            fecha: data.fecha,
+            hora: data.hora,
+            sintomas: data.sintomas
+        });
+          // let's assume the default of isAdmin is false
+          console.log(citas.cliente); // 'alice123'
+          console.log(citas.id); // false  
+
         io.sockets.emit('info:DB_Server', data);
+        console.log('estoy por aca', data);
     });
     socket.on('info:DB_delete', (data) => {
         //Justo en este momento debes hacer algo en la base de datos real
