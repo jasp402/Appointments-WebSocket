@@ -5,10 +5,6 @@ const socket = io();
 
 console.log(socket.id); // undefined
 
-
-
-
-
 // Crear Variables
 const form              = document.querySelector('form'),
       nombreMascota     = document.querySelector('#mascota'),
@@ -59,6 +55,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('connect', () => {
         console.log(socket.id); // 'G5p5...'
+    });
+    socket.on('info:DB_load_Server', (data) => {
+        console.log('socket.id', data);
+
+        //instanciamos un objeto Store
+        let objectStore = DB.transaction('citas').objectStore('citas');
+        //llamamos una peticion
+        objectStore.openCursor().onsuccess = (e) => {
+            let cursor = e.target.result;
+            if(cursor){
+                console.log('cursor--->',cursor.value)
+            }else{
+                let transaction = DB.transaction(['citas'], 'readwrite');
+                let Store       = transaction.objectStore('citas');
+                let syncRequest = Store.add(data[0]);
+                syncRequest.onsuccess = () => {
+                    form.reset();
+                };
+                transaction.oncomplete = () => {
+                    mostrarCitas();
+                };
+                transaction.onerror    = () => {
+                    console.log('Hay un error!!');
+                }
+            }
+        }
+
+
     });
     socket.on('info:DB_Server', (data) => {
         console.log('socket.id', socket.id);
@@ -202,5 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
         citaID = Number(e.target.parentElement.getAttribute('data-cita-id'));
         socket.emit('info:DB_delete', citaID);
     }
+
+    console.log('load  DOM');
+    socket.emit('info:DB_load');
 
 }); // DOM Ready

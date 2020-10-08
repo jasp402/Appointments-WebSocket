@@ -102,5 +102,10 @@ io.on('connection', (socket) => {
         //Justo en este momento debes hacer algo en la base de datos real
         io.sockets.emit('info:DB_delete_Server', data);
     });
+    socket.on('info:DB_load', async() => {
+        //Justo en este momento debes hacer algo en la base de datos real
+        const citas = await Citas.findAll({});
+        io.sockets.emit('info:DB_load_Server', citas);
+    });
 });
 
