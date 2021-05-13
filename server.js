@@ -70,7 +70,7 @@ Citas.sync();
 dotenv.config();
 const app = express();
 
-app.set('port', process.env.PORT);
+app.set('port', process.env.PORT||8620);
 app.use(express.static(path.join(__dirname, 'public')));
 
 const server_old = app.listen(process.env.PORT, function () {
