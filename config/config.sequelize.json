@@ -1,0 +1,11 @@
+{
+  "define": {
+    "freezeTableName": true
+  },
+  "database": "appointment",
+  "username": "root",
+  "password": null,
+  "dialect": "sqlite",
+  "host": "127.0.0.1",
+  "storage": "./database.sqlite"
+}

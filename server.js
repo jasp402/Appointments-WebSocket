@@ -2,19 +2,10 @@ const path      = require('path');
 const express   = require('express');
 const webSocket = require('socket.io');
 const dotenv    = require('dotenv');
+const config    = require('./config/config.sequelize.json');
 const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 
-const sequelize = new Sequelize({
-    define: {
-        freezeTableName: true
-    },
-    database: 'appointment',
-    username: 'root',
-    password: null,
-    dialect: 'sqlite',
-    host    : "127.0.0.1",
-    storage: './database.sqlite'
-});
+const sequelize = new Sequelize(config);
 
 sequelize
     .authenticate()
@@ -98,9 +89,12 @@ io.on('connection', (socket) => {
         io.sockets.emit('info:DB_Server', data);
         console.log('estoy por aca', data);
     });
-    socket.on('info:DB_delete', (data) => {
+    socket.on('info:DB_delete', async (data) => {
+        console.log('---delete', data)
         //Justo en este momento debes hacer algo en la base de datos real
         io.sockets.emit('info:DB_delete_Server', data);
+        const citas = await Citas.findByPk(data)
+        citas.destroy();
     });
     socket.on('info:DB_load', async() => {
         //Justo en este momento debes hacer algo en la base de datos real
