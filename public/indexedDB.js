@@ -1,11 +1,9 @@
 let DB;
 
-// Websockets
+// Create instance Websockets
 const socket = io();
 
-console.log(socket.id); // undefined
-
-// Crear Variables
+// Create variables
 const form              = document.querySelector('form'),
       nombreMascota     = document.querySelector('#mascota'),
       nombreDueño       = document.querySelector('#cliente'),
@@ -16,7 +14,7 @@ const form              = document.querySelector('form'),
       headingAdministra = document.querySelector('#administra'),
       citas             = document.querySelector('#citas');
 
-// Esperar el DOM ready
+// Wait for DOM loaded
 document.addEventListener('DOMContentLoaded', () => {
     let crearDB = window.indexedDB.open('citas', 1);
 
@@ -51,26 +49,26 @@ document.addEventListener('DOMContentLoaded', () => {
         objectStore.createIndex('hora', 'hora', {unique: false});
         objectStore.createIndex('sintomas', 'sintomas', {unique: false});
     }
-
-
+    
+    
     socket.on('connect', () => {
         console.log(socket.id); // 'G5p5...'
     });
     socket.on('info:DB_load_Server', (data) => {
         console.log('socket.id', data);
-
+        
         //instanciamos un objeto Store
-        let objectStore = DB.transaction('citas').objectStore('citas');
+        let objectStore                    = DB.transaction('citas').objectStore('citas');
         //llamamos una peticion
         objectStore.openCursor().onsuccess = (e) => {
             let cursor = e.target.result;
-            if(cursor){
-                console.log('cursor--->',cursor.value)
-            }else{
-                let transaction = DB.transaction(['citas'], 'readwrite');
-                let Store       = transaction.objectStore('citas');
-                let syncRequest = Store.add(data[0]);
-                syncRequest.onsuccess = () => {
+            if (cursor) {
+                console.log('cursor--->', cursor.value)
+            } else {
+                let transaction        = DB.transaction(['citas'], 'readwrite');
+                let Store              = transaction.objectStore('citas');
+                let syncRequest        = Store.add(data[0]);
+                syncRequest.onsuccess  = () => {
                     form.reset();
                 };
                 transaction.oncomplete = () => {
@@ -81,14 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
-
+        
+        
     });
     socket.on('info:DB_Server', (data) => {
         console.log('socket.id', socket.id);
-        let transaction = DB.transaction(['citas'], 'readwrite');
-        let Store       = transaction.objectStore('citas');
-        let syncRequest = Store.add(data);
+        let transaction        = DB.transaction(['citas'], 'readwrite');
+        let Store              = transaction.objectStore('citas');
+        let syncRequest        = Store.add(data);
         syncRequest.onsuccess  = () => {
             form.reset();
         }
